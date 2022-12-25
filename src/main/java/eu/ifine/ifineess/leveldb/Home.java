@@ -12,26 +12,27 @@ import java.util.UUID;
 
 public class Home {
     private UUID uuid;
-    private ArrayList<HomeData> homeList;
+
+    private ArrayList<HomeData> homelist;
 
     public Home(UUID uuid) {
         this.uuid = uuid;
-        this.homeList = new ArrayList<>();
+        this.homelist = new ArrayList<>();
     }
 
     public void addHome(String name, Vec3d pos, RegistryKey<World> world) {
-        if (homeList == null) {
-            homeList = new ArrayList<>();
+        if (homelist == null) {
+            homelist = new ArrayList<>();
         }
-        homeList.add(new HomeData(name, pos, world));
+        homelist.add(new HomeData(name, pos, world));
         save();
     }
 
 
     public void removeHome(String name) {
-        for (HomeData homeData : homeList) {
+        for (HomeData homeData : homelist) {
             if (homeData.getName().equals(name)) {
-                homeList.remove(homeData);
+                homelist.remove(homeData);
                 save();
                 return;
             }
@@ -39,7 +40,7 @@ public class Home {
     }
 
     public boolean hasHome(String name) {
-        for (HomeData homeData : homeList) {
+        for (HomeData homeData : homelist) {
             if (homeData.getName().equals(name)) {
                 return true;
             }
@@ -48,7 +49,7 @@ public class Home {
     }
 
     public Pair<Vec3d, RegistryKey<World>> getHome(String name) {
-        for (HomeData homeData : homeList) {
+        for (HomeData homeData : homelist) {
             if (homeData.getName().equals(name)) {
                 return new Pair<>(homeData.getPos(), homeData.getDimension());
             }
@@ -58,7 +59,7 @@ public class Home {
 
     public List<String> getHomes(){
         List<String> result = new ArrayList<>();
-        for (HomeData homeData : homeList) {
+        for (HomeData homeData : homelist) {
             result.add(homeData.getName());
         }
         return result;
@@ -77,3 +78,4 @@ public class Home {
         this.uuid = uuid;
     }
 }
+

@@ -3,12 +3,12 @@ package eu.ifine.ifineess.leveldb;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.alibaba.fastjson2.JSON;
-import com.alibaba.fastjson2.JSONWriter;
+import com.google.gson.Gson;
 import eu.ifine.ifineess.Ifineess;
 import org.iq80.leveldb.DB;
 import org.iq80.leveldb.DBFactory;
@@ -44,12 +44,9 @@ public class LevelDbUtil {
      * @return
      */
     private byte[] serializer(Object obj) {
-        byte[] jsonBytes = JSON.toJSONBytes(obj);
-        //JSONSTR
-        String jsonStr = new String(jsonBytes);
-        Ifineess.LOGGER.info(jsonStr);
-
-        return jsonBytes;
+        Gson gson = new Gson();
+        gson.toJson(obj).getBytes(StandardCharsets.UTF_8);
+        return gson.toJson(obj).getBytes(StandardCharsets.UTF_8);
     }
 
     /**
@@ -58,9 +55,10 @@ public class LevelDbUtil {
      * @param bytes
      * @return
      */
-    private Object deserializer(byte[] bytes) {
+    private <T> T deserializer(byte[] bytes, Class<T> clazz) {
         String str = new String(bytes);
-        return JSON.parse(str);
+        Gson gson = new Gson();
+        return gson.fromJson(str, clazz);
     }
 
     /**
@@ -84,7 +82,7 @@ public class LevelDbUtil {
      * @param key
      * @return
      */
-    public Object get(String key) {
+    public <T> T get(String key, Class<T> clazz) {
         byte[] val = null;
         try {
             val = db.get(key.getBytes(charset));
@@ -96,7 +94,7 @@ public class LevelDbUtil {
         if (val == null) {
             return null;
         }
-        return deserializer(val);
+        return deserializer(val, clazz);
     }
 
     /**

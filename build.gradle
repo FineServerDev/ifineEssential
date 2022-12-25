@@ -27,9 +27,9 @@ configurations {
 
 dependencies {
 
+    implementation 'com.google.code.gson:gson:2.10'
     myImplementation   'org.iq80.leveldb:leveldb:0.12'
     myImplementation   'org.iq80.leveldb:leveldb-api:0.12'
-    myImplementation   'com.alibaba.fastjson2:fastjson2:2.0.21.graal'
 
     // To change the versions see the gradle.properties file
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
