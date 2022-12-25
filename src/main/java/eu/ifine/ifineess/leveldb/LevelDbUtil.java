@@ -9,6 +9,7 @@ import java.util.Map;
 
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONWriter;
+import eu.ifine.ifineess.Ifineess;
 import org.iq80.leveldb.DB;
 import org.iq80.leveldb.DBFactory;
 import org.iq80.leveldb.DBIterator;
@@ -17,7 +18,7 @@ import org.iq80.leveldb.impl.Iq80DBFactory;
 
 public class LevelDbUtil {
     public DB db = null;
-    private String dbFolder="config/ifineess/db/data.db";
+    private String dbFolder="config/ifineess/db/";
     private String charset = "utf-8";
 
     /**
@@ -43,7 +44,11 @@ public class LevelDbUtil {
      * @return
      */
     private byte[] serializer(Object obj) {
-        byte[] jsonBytes = JSON.toJSONBytes(obj, JSONWriter.Feature.ReferenceDetection);
+        byte[] jsonBytes = JSON.toJSONBytes(obj);
+        //JSONSTR
+        String jsonStr = new String(jsonBytes);
+        Ifineess.LOGGER.info(jsonStr);
+
         return jsonBytes;
     }
 

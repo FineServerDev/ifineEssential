@@ -1,17 +1,14 @@
 plugins {
     id 'fabric-loom' version '1.0.1'
     id 'maven-publish'
+    id "com.github.johnrengelman.shadow" version "7.1.2"
+    id 'java'
 }
 
 version = project.mod_version
 group = project.maven_group
 
 repositories {
-    // Add repositories to retrieve artifacts from in here.
-    // You should only use this when depending on other mods because
-    // Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
-    // See https://docs.gradle.org/current/userguide/declaring_repositories.html
-    // for more information about repositories.
     maven {
         name = 'opencollab-snapshot-repo'
         url = 'https://repo.opencollab.dev/maven-snapshots/'
@@ -23,11 +20,16 @@ repositories {
     mavenCentral()
 }
 
+configurations {
+    myImplementation
+    implementation.extendsFrom(myImplementation)
+}
+
 dependencies {
 
-    implementation 'org.iq80.leveldb:leveldb:0.12'
-    implementation 'org.iq80.leveldb:leveldb-api:0.12'
-    implementation 'com.alibaba.fastjson2:fastjson2:2.0.21.graal'
+    myImplementation   'org.iq80.leveldb:leveldb:0.12'
+    myImplementation   'org.iq80.leveldb:leveldb-api:0.12'
+    myImplementation   'com.alibaba.fastjson2:fastjson2:2.0.21.graal'
 
     // To change the versions see the gradle.properties file
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
@@ -38,15 +40,11 @@ dependencies {
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
     implementation "org.geysermc.floodgate:api:${project.floodgate_version}"
-
 }
 
-processResources {
-    inputs.property "version", project.version
-    filteringCharset "UTF-8"
-
-    filesMatching("fabric.mod.json") {
-        expand "version": project.version
+jar {
+    from {
+        configurations.myImplementation.collect { it.isDirectory() ? it : zipTree(it) }
     }
 }
 
