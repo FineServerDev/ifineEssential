@@ -51,7 +51,7 @@ public class Home {
     public Pair<Vec3d, RegistryKey<World>> getHome(String name) {
         for (HomeData homeData : homelist) {
             if (homeData.getName().equals(name)) {
-                return new Pair<>(homeData.getPos(), homeData.getDimension());
+                return new Pair<>(homeData.getPosition(), homeData.getDimension());
             }
         }
         return null;

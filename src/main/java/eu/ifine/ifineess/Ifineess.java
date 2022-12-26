@@ -1,8 +1,10 @@
 package eu.ifine.ifineess;
 
 import eu.ifine.ifineess.commands.RegisterHomeCommand;
+import eu.ifine.ifineess.commands.RegisterWarpCommand;
 import eu.ifine.ifineess.leveldb.Home;
 import eu.ifine.ifineess.leveldb.LevelDbUtil;
+import eu.ifine.ifineess.leveldb.Warp;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -16,8 +18,8 @@ import java.util.UUID;
 public class Ifineess implements ModInitializer {
     public static final Logger LOGGER = LogManager.getLogger();
     public static HashMap<UUID, Home> homeMap = new HashMap<>();
+    public static HashMap<String, Warp> warpMap = new HashMap<>();
     public static LevelDbUtil levelDb = new LevelDbUtil();
-
     public  static MinecraftServer SERVER;
     public static String PREFIX = "§6§l[§e§lFINE§6§l]§r ";
 
@@ -25,9 +27,11 @@ public class Ifineess implements ModInitializer {
     public void onInitialize() {
         levelDb.initLevelDB();
         InitHomeMap();
+        InitWarpMap();
 
         CommandRegistrationCallback.EVENT.register((commandDispatcher, registryAccess, environment) -> {
             RegisterHomeCommand.registerCommands(commandDispatcher);
+            RegisterWarpCommand.registerCommands(commandDispatcher);
         });
 
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
@@ -42,6 +46,14 @@ public class Ifineess implements ModInitializer {
             Home obj = levelDb.get(uuid,Home.class);
             String key = uuid.substring(5);
             homeMap.put(UUID.fromString(key), obj);
+        });
+    }
+
+    public void InitWarpMap(){
+        levelDb.getKeys("warp_").forEach(uuid -> {
+            Warp obj = levelDb.get(uuid,Warp.class);
+            String key = uuid.substring(5);
+            warpMap.put(key, obj);
         });
     }
 }

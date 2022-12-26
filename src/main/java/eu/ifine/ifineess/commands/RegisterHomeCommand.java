@@ -47,16 +47,17 @@ public class RegisterHomeCommand {
                                         .executes(context -> tpHome(context.getSource(), StringArgumentType.getString(context, "name")))
                                 )
                         )
+                        .then(CommandManager.literal("gui")
+                                .executes(context -> guiHome(context.getSource()))
+                        )
         );
     }
 
     private static int setHome(ServerCommandSource source, String name) {
         ServerPlayerEntity player =  source.getPlayer();
-
         if (!Ifineess.homeMap.containsKey(player.getUuid())) {
             Ifineess.homeMap.put(player.getUuid(), new Home(player.getUuid()));
         }
-
         Home home = Ifineess.homeMap.get(player.getUuid());
         if (home.hasHome(name)){
             source.sendFeedback(Text.of(Ifineess.PREFIX + "§c你已经有这个家了！"), false);
@@ -107,8 +108,13 @@ public class RegisterHomeCommand {
             return 0;
         }
         Pair<Vec3d, RegistryKey<World>> h =  home.getHome(name);
-        player.teleport(player.getServer().getWorld(h.getRight()), h.getLeft().x, h.getLeft().y, h.getLeft().z, player.getYaw(), player.getPitch());
+        player.teleport(Ifineess.SERVER.getWorld(h.getRight()), h.getLeft().x, h.getLeft().y, h.getLeft().z, player.getYaw(), player.getPitch());
         source.sendFeedback(Text.of(Ifineess.PREFIX +"§a成功传送到家("+ name +")！"), false);
+        return 1;
+    }
+
+    private static int guiHome(ServerCommandSource source) {
+        ServerPlayerEntity player =  source.getPlayer();
         return 1;
     }
 }

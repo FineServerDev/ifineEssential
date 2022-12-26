@@ -5,19 +5,23 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 
-public class HomeData{
+import java.util.ArrayList;
+
+public class Warp {
     private String name;
     private double x;
     private double y;
     private double z;
     private String dimension;
 
-    public HomeData(String name, Vec3d pos, RegistryKey<World> dimension) {
+    public Warp(String name, Vec3d pos, RegistryKey<World> dimension) {
         this.name = name;
         this.x = pos.x;
         this.y = pos.y;
         this.z = pos.z;
-        this.dimension = dimension.getValue().toString();
+        this.dimension = dimension.getValue().toString();;
+        Ifineess.warpMap.put(name, this);
+        Ifineess.levelDb.put("warp_" + name, this);
     }
 
     public Vec3d getPosition() {
@@ -36,4 +40,10 @@ public class HomeData{
     public String getName() {
         return name;
     }
+
+    public void removeWarp() {
+        Ifineess.warpMap.remove(name);
+        Ifineess.levelDb.delete("warp_"+name);
+    }
+
 }
