@@ -1,6 +1,7 @@
 package eu.ifine.ifineess;
 
 import eu.ifine.ifineess.commands.RegisterHomeCommand;
+import eu.ifine.ifineess.commands.RegisterTpaCommand;
 import eu.ifine.ifineess.commands.RegisterWarpCommand;
 import eu.ifine.ifineess.leveldb.Home;
 import eu.ifine.ifineess.leveldb.LevelDbUtil;
@@ -32,6 +33,7 @@ public class Ifineess implements ModInitializer {
         CommandRegistrationCallback.EVENT.register((commandDispatcher, registryAccess, environment) -> {
             RegisterHomeCommand.registerCommands(commandDispatcher);
             RegisterWarpCommand.registerCommands(commandDispatcher);
+            RegisterTpaCommand.registerCommands(commandDispatcher);
         });
 
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
