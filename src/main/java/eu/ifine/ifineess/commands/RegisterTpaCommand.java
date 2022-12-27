@@ -4,12 +4,13 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import eu.ifine.ifineess.Ifineess;
+import net.minecraft.command.argument.ColorArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Vec3d;
-
+import net.minecraft.command.argument.EntityArgumentType;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
@@ -32,13 +33,14 @@ public class RegisterTpaCommand {
                 CommandManager.literal("tpa")
                         .requires(isPlayer)
                         .then(CommandManager.literal("to")
-                                .then(CommandManager.argument("name",StringArgumentType.greedyString())
-                                        .executes(context -> TpaTo(context.getSource(), StringArgumentType.getString(context, "name")))
+                                //玩家选择器
+                                .then(CommandManager.argument("player", EntityArgumentType.player())
+                                        .executes(context -> TpaTo(context.getSource(), EntityArgumentType.getPlayer(context, "player").getName().getString()))
                                 )
                         )
                         .then(CommandManager.literal("from")
-                                .then(CommandManager.argument("name", StringArgumentType.greedyString())
-                                        .executes(context -> TpaFrom(context.getSource(), StringArgumentType.getString(context, "name")))
+                                .then(CommandManager.argument("player", EntityArgumentType.player())
+                                        .executes(context -> TpaFrom(context.getSource(),  EntityArgumentType.getPlayer(context, "player").getName().getString()))
                                 )
                         )
                         .then(CommandManager.literal("accept")
@@ -61,12 +63,12 @@ public class RegisterTpaCommand {
 
         if (!Queue.containsKey(player) && !Queue.containsValue(player)) {
             Queue.put(player, target);
-            target.sendMessage(Text.of(Ifineess.PREFIX + "§a"+ player.getName() +"§e请求传送到你的位置!\n§atpa accept接受\n§6tpa reject拒绝"));
+            Ifineess.SERVER.getCommandManager().executeWithPrefix(Ifineess.SERVER.getCommandSource(), "/tellraw " + target.getName().getString() + " [{\"text\":\"[\",\"color\":\"gold\",\"bold\":true},{\"text\":\"FINE\",\"color\":\"yellow\",\"bold\":true},{\"text\":\"] \",\"color\":\"gold\",\"bold\":true},{\"text\":\""+player.getName().getString()+"\",\"color\":\"green\",\"bold\":false},{\"text\":\"请求传送到你的位置!\",\"color\":\"yellow\"},{\"text\":\"\\n[\",\"color\":\"gold\",\"bold\":true},{\"text\":\"接受\",\"color\":\"green\",\"bold\":true,\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/tpa accept\"}},{\"text\":\"]\",\"color\":\"gold\",\"bold\":true},{\"text\":\"[\",\"color\":\"gold\",\"bold\":true},{\"text\":\"拒绝\",\"color\":\"red\",\"bold\":true,\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/tpa reject\"}},{\"text\":\"]\",\"color\":\"gold\",\"bold\":true}]");
             source.sendFeedback(Text.of(Ifineess.PREFIX + "§a成功发送传送请求"), false);
         } else source.sendFeedback(Text.of(Ifineess.PREFIX + "§6你有一个正在处理中的请求哦"), false);
 
         Timer timer = new Timer();
-        timer.schedule(new timeOut(player, Queue),30000L);
+        timer.schedule(new timeOut(player, Queue),60000L);
         return 1;
     }
 
@@ -81,12 +83,13 @@ public class RegisterTpaCommand {
 
         if (!Queue.containsKey(player) && !Queue.containsValue(player)) {
             Queue.put(target, player);
-            target.sendMessage(Text.of(Ifineess.PREFIX + "§a"+ player.getName() +"§e请你传送到他的位置!\n§atpa accept接受\n§6tpa reject拒绝"));
+            Ifineess.SERVER.getCommandManager().executeWithPrefix(Ifineess.SERVER.getCommandSource(), "/tellraw " + target.getName().getString() + " [{\"text\":\"[\",\"color\":\"gold\",\"bold\":true},{\"text\":\"FINE\",\"color\":\"yellow\",\"bold\":true},{\"text\":\"] \",\"color\":\"gold\",\"bold\":true},{\"text\":\""+player.getName().getString()+"\",\"color\":\"green\",\"bold\":false},{\"text\":\"请求传送到他的位置!\",\"color\":\"yellow\"},{\"text\":\"\\n[\",\"color\":\"gold\",\"bold\":true},{\"text\":\"接受\",\"color\":\"green\",\"bold\":true,\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/tpa accept\"}},{\"text\":\"]\",\"color\":\"gold\",\"bold\":true},{\"text\":\"[\",\"color\":\"gold\",\"bold\":true},{\"text\":\"拒绝\",\"color\":\"red\",\"bold\":true,\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/tpa reject\"}},{\"text\":\"]\",\"color\":\"gold\",\"bold\":true}]");
+
             source.sendFeedback(Text.of(Ifineess.PREFIX + "§a成功发送传送请求"), false);
         } else source.sendFeedback(Text.of(Ifineess.PREFIX + "§6你有一个正在处理中的请求哦"), false);
 
         Timer timer = new Timer();
-        timer.schedule(new timeOut(player, Queue),30000L);
+        timer.schedule(new timeOut(player, Queue),60000L);
         return 1;
     }
 
@@ -108,6 +111,8 @@ public class RegisterTpaCommand {
             pos = v.getPos();
             k.teleport(v.getWorld(), pos.getX(), pos.getY(), pos.getZ(), v.getYaw(), v.getPitch());
             Queue.remove(k);
+            source.sendFeedback(Text.of(Ifineess.PREFIX + "§a成功传送"), false);
+            v.sendMessage(Text.of(Ifineess.PREFIX + "§a对方接受了你的请求"));
 
         } else {
             source.sendFeedback(Text.of(Ifineess.PREFIX + "§6没有待处理的请求"), false);
