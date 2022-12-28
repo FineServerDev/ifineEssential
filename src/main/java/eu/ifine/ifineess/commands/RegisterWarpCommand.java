@@ -4,6 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import eu.ifine.ifineess.Ifineess;
+import eu.ifine.ifineess.argument.WarpArgumentType;
 import eu.ifine.ifineess.leveldb.Warp;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;

@@ -5,23 +5,31 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 
-public class Warp {
-    private String name;
+public class Spawn {
     private double x;
     private double y;
     private double z;
     private String dimension;
 
-    public Warp(String name, Vec3d pos, RegistryKey<World> dimension) {
-        this.name = name;
-        this.x = pos.x;
-        this.y = pos.y;
-        this.z = pos.z;
-        this.dimension = dimension.getValue().toString();;
-        Ifineess.warpMap.put(name, this);
-        Ifineess.levelDb.put("warp_" + name, this);
+    public Spawn(double x, double y, double z, String dimension) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.dimension = dimension;
+        Ifineess.levelDb.put("spawn", this);
+        Ifineess.spawn = this;
+    }
+    public double getX() {
+        return x;
     }
 
+    public double getY() {
+        return y;
+    }
+
+    public double getZ() {
+        return z;
+    }
     public Vec3d getPosition() {
         return new Vec3d(x, y, z);
     }
@@ -34,14 +42,4 @@ public class Warp {
         }
         return null;
     }
-
-    public String getName() {
-        return name;
-    }
-
-    public void removeWarp() {
-        Ifineess.warpMap.remove(name);
-        Ifineess.levelDb.delete("warp_"+name);
-    }
-
 }
