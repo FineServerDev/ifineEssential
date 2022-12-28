@@ -5,11 +5,13 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import eu.ifine.ifineess.Ifineess;
 import eu.ifine.ifineess.argument.WarpArgumentType;
+import eu.ifine.ifineess.form.WarpForm;
 import eu.ifine.ifineess.leveldb.Warp;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import org.geysermc.floodgate.api.FloodgateApi;
 
 import java.util.function.Predicate;
 
@@ -110,6 +112,11 @@ public class RegisterWarpCommand {
 
     private static int guiWarp(ServerCommandSource source) {
         ServerPlayerEntity player =  source.getPlayer();
+        if (FloodgateApi.getInstance().isFloodgatePlayer(player.getUuid())){
+            WarpForm.sendWarpFormMain(FloodgateApi.getInstance().getPlayer(player.getUuid()));
+        }else{
+            source.sendFeedback(Text.of(Ifineess.PREFIX + "§c你不是基岩版玩家！"), false);
+        }
         return 0;
     }
 }
